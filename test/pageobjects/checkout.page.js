@@ -7,28 +7,18 @@ class CheckoutPage extends Page {
     get continueBtn() { return $('input[data-test="continue"]'); }
     get finishBtn() { return $('button[data-test="finish"]'); }
 
-    async waitForFormVisible() {
-        await this.firstNameInput.waitForDisplayed();
-        await this.lastNameInput.waitForDisplayed();
-        await this.postalCodeInput.waitForDisplayed();
-    }
-
     async fillCheckoutForm(firstName, lastName, postalCode) {
-        await this.waitForFormVisible();
-
-        await this.firstNameInput.setValue(firstName);
-        await this.lastNameInput.setValue(lastName);
-        await this.postalCodeInput.setValue(postalCode);
+        await this.setValue(this.firstNameInput, firstName);
+        await this.setValue(this.lastNameInput, lastName);
+        await this.setValue(this.postalCodeInput, postalCode);
     }
 
     async clickContinue() {
-        await this.continueBtn.waitForClickable();
-        await this.continueBtn.click();
+        await this.clickElement(this.continueBtn);
     }
 
     async clickFinish() {
-        await this.finishBtn.waitForClickable();
-        await this.finishBtn.click();
+        await this.clickElement(this.finishBtn);
     }
 
     async open() {
@@ -37,3 +27,4 @@ class CheckoutPage extends Page {
 }
 
 export default new CheckoutPage();
+

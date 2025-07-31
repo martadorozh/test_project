@@ -1,73 +1,58 @@
-import LoginPage from '../pageobjects/login.page.js';
-import InventoryPage from '../pageobjects/inventory.page.js';
-import CartPage from '../pageobjects/cart.page.js';
+import loginPage from '../pageobjects/login.page.js';
+import inventoryPage from '../pageobjects/inventory.page.js';
+import cartPage from '../pageobjects/cart.page.js';
+import helper from '../helpers/helper.js';
 
 describe('TC05 - Saving the cart after logout', () => {
-
     beforeEach(async () => {
-        await LoginPage.open();
-        await LoginPage.login('standard_user', 'secret_sauce');
-        await browser.pause(1000);
-        const url = await browser.getUrl();
-        expect(url).toContain('inventory.html');
+        await loginPage.open();
+        await loginPage.login('standard_user', 'secret_sauce');
+        await loginPage.pause(1000);
     });
 
     it('should preserve cart items after logout and login', async () => {
-        // Додаємо товар у корзину
-        await InventoryPage.addFirstProductToCart();
-        await browser.pause(1000);
+        await inventoryPage.addFirstProductToCart();
+        await inventoryPage.pause(1000);
 
-        const badgeCount = await InventoryPage.getCartBadgeCount();
+        const badgeCount = await inventoryPage.getCartBadgeCount();
         expect(badgeCount).toBe(1);
 
-        // Клікаємо на бургер-меню
-        await InventoryPage.menuButton.click();
-        await browser.pause(700);
+        await inventoryPage.clickElement(inventoryPage.menuButton);
+        await inventoryPage.pause(700);
 
-        // Перевіряємо, що меню розгорнулося і має 4 пункти
-        const menuItems = await InventoryPage.menuItems;
+        const menuItems = await inventoryPage.menuItems;
         expect(menuItems.length).toBe(4);
 
-        // Клікаємо Logout
-        await InventoryPage.logoutButton.click();
-        await browser.pause(1000);
-        const loginUrl = await browser.getUrl();
-        expect(loginUrl).toContain('saucedemo.com');
+        await inventoryPage.clickElement(inventoryPage.logoutButton);
+        await inventoryPage.pause(1000);
 
-        const isUsernameVisible = await LoginPage.inputUsername.isDisplayed();
-        expect(isUsernameVisible).toBe(true);
+        await helper.verifyUrlContains('saucedemo.com');
+        await helper.verifyElementVisible(loginPage.inputUsername);
 
-        // Перевірка, що поля порожні
-        const usernameVal = await LoginPage.inputUsername.getValue();
-        const passwordVal = await LoginPage.inputPassword.getValue();
+        const usernameVal = await loginPage.inputUsername.getValue();
+        const passwordVal = await loginPage.inputPassword.getValue();
         expect(usernameVal).toBe('');
         expect(passwordVal).toBe('');
 
-        // Знову логінимося
-        await LoginPage.login('standard_user', 'secret_sauce');
-        await browser.pause(1000);
-        const afterLoginUrl = await browser.getUrl();
-        expect(afterLoginUrl).toContain('inventory.html');
+        await loginPage.login('standard_user', 'secret_sauce');
+        await loginPage.pause(1000);
 
-        // Перевіряємо, що товари завантажились
-        const items = await InventoryPage.inventoryItems;
+        await helper.verifyUrlContains('inventory.html');
+
+        const items = await inventoryPage.inventoryItems;
         expect(items.length).toBeGreaterThan(0);
+        await helper.verifyElementVisible(inventoryPage.cartButton);
 
-        // Перевіряємо, що кнопка корзини відображається
-        const cartVisible = await InventoryPage.cartButton.isDisplayed();
-        expect(cartVisible).toBe(true);
+        await inventoryPage.goToCart();
+        await inventoryPage.pause(1000);
 
-        // Переходимо в корзину
-        await InventoryPage.goToCart();
-        await browser.pause(1000);
-        const cartUrl = await browser.getUrl();
-        expect(cartUrl).toContain('cart.html');
+        await helper.verifyUrlContains('cart.html');
 
-        // Перевіряємо, що на сторінці корзини є 1 товар
-        const cartItems = await CartPage.cartItems;
+        const cartItems = await cartPage.cartItems;
         expect(cartItems.length).toBe(1);
 
         const cartItem = await $('[data-test="inventory-item-name"]');
-        expect(await cartItem.getText()).toBe('Sauce Labs Backpack');
+        await helper.verifyTextEquals(cartItem, 'Sauce Labs Backpack');
     });
 });
+

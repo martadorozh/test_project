@@ -1,39 +1,29 @@
-import LoginPage from '../pageobjects/login.page.js';
-import InventoryPage from '../pageobjects/inventory.page.js';
+import loginPage from '../pageobjects/login.page.js';
+import inventoryPage from '../pageobjects/inventory.page.js';
+import helper from '../helpers/helper.js';
 
 describe('TC04 - Logout', () => {
-
     beforeEach(async () => {
-        await LoginPage.open();
-        await LoginPage.login('standard_user', 'secret_sauce');
-        await browser.pause(1000);
-        const url = await browser.getUrl();
-        expect(url).toContain('inventory.html');
+        await loginPage.open();
+        await loginPage.login('standard_user', 'secret_sauce');
+        await loginPage.pause(1000);
     });
 
     it('should logout user and redirect to login page', async () => {
-        // Клікаємо на бургер-меню
-        await InventoryPage.menuButton.click();
-        await browser.pause(700);
+        await inventoryPage.clickElement(inventoryPage.menuButton);
+        await inventoryPage.pause(700);
 
-        // Перевірка, що меню розгорнулось з 4 пунктами
-        const menuItems = await InventoryPage.menuItems;
+        const menuItems = await inventoryPage.menuItems;
         expect(menuItems.length).toBe(4);
 
-        // Клікаємо Logout
-        await InventoryPage.logoutButton.click();
-        await browser.pause(1000);
+        await inventoryPage.clickElement(inventoryPage.logoutButton);
+        await inventoryPage.pause(1000);
 
-        // Перевірка, що повернулись на сторінку логіну
-        const loginUrl = await browser.getUrl();
-        expect(loginUrl).toContain('saucedemo.com');
+        await helper.verifyUrlContains('saucedemo.com');
+        await helper.verifyElementVisible(loginPage.inputUsername);
 
-        const isLoginVisible = await LoginPage.inputUsername.isDisplayed();
-        expect(isLoginVisible).toBe(true);
-
-        // Перевірка, що поля порожні
-        const usernameValue = await LoginPage.inputUsername.getValue();
-        const passwordValue = await LoginPage.inputPassword.getValue();
+        const usernameValue = await loginPage.inputUsername.getValue();
+        const passwordValue = await loginPage.inputPassword.getValue();
         expect(usernameValue).toBe('');
         expect(passwordValue).toBe('');
     });

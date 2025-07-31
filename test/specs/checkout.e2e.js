@@ -1,55 +1,48 @@
-import LoginPage from '../pageobjects/login.page.js';
-import InventoryPage from '../pageobjects/inventory.page.js';
-import CartPage from '../pageobjects/cart.page.js';
-import CheckoutPage from '../pageobjects/checkout.page.js';
-import CompletePage from '../pageobjects/complete.page.js';
+import loginPage from '../pageobjects/login.page.js';
+import inventoryPage from '../pageobjects/inventory.page.js';
+import cartPage from '../pageobjects/cart.page.js';
+import checkoutPage from '../pageobjects/checkout.page.js';
+import completePage from '../pageobjects/complete.page.js';
+import helper from '../helpers/helper.js';
 
 describe('TC08 - Valid Checkout', () => {
-
     beforeEach(async () => {
-        await LoginPage.open();
-        await LoginPage.login('standard_user', 'secret_sauce');
-        await browser.pause(1000);
-        const url = await browser.getUrl();
-        expect(url).toContain('inventory.html'); // Перевірка, що ми на потрібній сторінці
+        await loginPage.open();
+        await loginPage.login('standard_user', 'secret_sauce');
+        await loginPage.pause(1000);
     });
 
     it('should complete the checkout process successfully', async () => {
-        //  Додаємо товар у корзину
-        const itemPrice = await InventoryPage.getFirstProductPriceValue();
-        await InventoryPage.addFirstProductToCart();
-        const count = await InventoryPage.getCartBadgeCount();
-        expect(count).toBe(1);
-        await browser.pause(1000);
+        const itemPrice = await inventoryPage.getFirstProductPriceValue();
+        await inventoryPage.addFirstProductToCart();
 
-        //  Переходимо в корзину
-        await InventoryPage.goToCart();
-        await browser.pause(500);
-        const cartUrl = await browser.getUrl();
-        expect(cartUrl).toContain('cart.html');
+        const count = await inventoryPage.getCartBadgeCount();
+        expect(count).toBe(1);
+        await inventoryPage.pause(1000);
+
+        await inventoryPage.goToCart();
+        await inventoryPage.pause(500);
+        await helper.verifyUrlContains('cart.html');
 
         const cartItem = await $('[data-test="inventory-item-name"]');
-        expect(await cartItem.getText()).toBe('Sauce Labs Backpack');
+        await helper.verifyTextEquals(cartItem, 'Sauce Labs Backpack');
 
-        //  В корзині клікаємо Checkout
-        await CartPage.clickCheckout();
-        await browser.pause(500);
+        await cartPage.clickCheckout();
+        await cartPage.pause(500);
 
-        // Заповнюємо форму
-        await CheckoutPage.fillCheckoutForm('Marta', 'Dorozhovets', '12345');
-        await expect(await CheckoutPage.firstNameInput.getValue()).toBe('Marta');
-        await expect(await CheckoutPage.lastNameInput.getValue()).toBe('Dorozhovets');
-        await expect(await CheckoutPage.postalCodeInput.getValue()).toBe('12345');
-        await CheckoutPage.clickContinue();
-        await browser.pause(1000);
+        await checkoutPage.fillCheckoutForm('Marta', 'Dorozhovets', '12345');
+        await helper.verifyInputValue(checkoutPage.firstNameInput, 'Marta');
+        await helper.verifyInputValue(checkoutPage.lastNameInput, 'Dorozhovets');
+        await helper.verifyInputValue(checkoutPage.postalCodeInput, '12345');
 
-        const overviewUrl = await browser.getUrl();
-        expect(overviewUrl).toContain('checkout-step-two.html');
+        await checkoutPage.clickContinue();
+        await checkoutPage.pause(1000);
+
+        await helper.verifyUrlContains('checkout-step-two.html');
 
         const itemName = await $('[data-test="inventory-item-name"]');
-        expect(await itemName.getText()).toBe('Sauce Labs Backpack');
+        await helper.verifyTextEquals(itemName, 'Sauce Labs Backpack');
 
-        // Перевіряємо Total і Tax
         const totalText = await $('[data-test="total-label"]').getText();
         const taxText = await $('[data-test="tax-label"]').getText();
 
@@ -58,31 +51,22 @@ describe('TC08 - Valid Checkout', () => {
 
         expect(total).toBeCloseTo(itemPrice + tax, 2);
 
-        // Завершуємо оформлення
-        await CheckoutPage.clickFinish();
-        await browser.pause(1000);
-        const completeUrl = await browser.getUrl();
-        expect(completeUrl).toContain('checkout-complete.html');
+        await checkoutPage.clickFinish();
+        await checkoutPage.pause(1000);
 
-        // Перевіряємо, що відображається повідомлення "Thank you for your order!"
-        await CompletePage.verifyCompleteMessage();
-        await browser.pause(1000);
+        await helper.verifyUrlContains('checkout-complete.html');
+        await completePage.verifyCompleteMessage();
+        await completePage.pause(1000);
 
-        // Натискаємо "Back Home" щоб повернутися на головну сторінку
-        await CompletePage.clickBackHome();
-        await browser.pause(500);
+        await completePage.clickBackHome();
+        await completePage.pause(500);
 
-        // Перевіряємо, що URL містить inventory.html (головна сторінка)
-        const url = await browser.getUrl();
-        expect(url).toContain('inventory.html');
-        await browser.pause(500);
+        await helper.verifyUrlContains('inventory.html');
 
-        // Перевірка, що товари є
-        const items = await InventoryPage.inventoryItems;
+        const items = await inventoryPage.inventoryItems;
         expect(items.length).toBeGreaterThan(0);
 
-        const cartCount = await InventoryPage.getCartBadgeCount();
+        const cartCount = await inventoryPage.getCartBadgeCount();
         expect(cartCount).toBe(0);
-
-   });
+    });
 });

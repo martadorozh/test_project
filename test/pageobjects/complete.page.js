@@ -1,22 +1,16 @@
 import Page from './page.js';
 
 class CompletePage extends Page {
-  
-    get completeMessage() {
-        return $('.complete-header');
-    }
-
-    get backHomeButton() {
-        return $('#back-to-products');
-    }
+    get completeMessage() { return $('.complete-header'); }
+    get backHomeButton() { return $('#back-to-products'); }
 
     async verifyCompleteMessage() {
-        await this.completeMessage.waitForDisplayed(); // гарантія, що елемент є
-        await expect(await this.completeMessage.getText()).toContain('Thank you for your order!');
+        const text = await this.getText(this.completeMessage);
+        expect(text).toContain('Thank you for your order!');
     }
 
     async clickBackHome() {
-        await this.backHomeButton.click();
+        await this.clickElement(this.backHomeButton);
     }
 
     async open() {
@@ -25,3 +19,4 @@ class CompletePage extends Page {
 }
 
 export default new CompletePage();
+

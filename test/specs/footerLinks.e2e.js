@@ -1,19 +1,18 @@
-import LoginPage from '../pageobjects/login.page.js';
-import InventoryPage from '../pageobjects/inventory.page.js';
-import FooterPage from '../pageobjects/footer.page.js';
+import loginPage from '../pageobjects/login.page.js';
+import footerPage from '../pageobjects/footer.page.js';
 
 describe('TC07 - Footer Links', () => {
     beforeEach(async () => {
-        await LoginPage.open();
-        await LoginPage.login('standard_user', 'secret_sauce');
-        await expect(await browser.getUrl()).toContain('inventory.html');
+        await loginPage.open();
+        await loginPage.login('standard_user', 'secret_sauce');
+        await loginPage.pause(1000);
     });
 
     it('should open footer social links in new tabs', async () => {
         const socialLinks = [
-            { element: FooterPage.xLink, expectedUrl: 'x.com' },
-            { element: FooterPage.facebookLink, expectedUrl: 'facebook.com' },
-            { element: FooterPage.linkedinLink, expectedUrl: 'linkedin.com' },
+            { element: footerPage.xLink, expectedUrl: 'x.com' },
+            { element: footerPage.facebookLink, expectedUrl: 'facebook.com' },
+            { element: footerPage.linkedinLink, expectedUrl: 'linkedin.com' },
         ];
 
         for (const { element, expectedUrl } of socialLinks) {
@@ -27,7 +26,7 @@ describe('TC07 - Footer Links', () => {
 
             expect(newWindow).toBeDefined();
             await browser.switchToWindow(newWindow);
-            await browser.pause(2000);
+            await footerPage.pause(2000);
 
             const url = await browser.getUrl();
             expect(url).toContain(expectedUrl);

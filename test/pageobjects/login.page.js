@@ -7,14 +7,17 @@ class LoginPage extends Page {
     get errorMessage() { return $('[data-test="error"]'); }
 
     async login(username, password) {
-        await this.inputUsername.waitForDisplayed();
-        await this.inputUsername.setValue(username);
-        await this.inputPassword.setValue(password);
-        await this.btnSubmit.click();
+        await this.setValue(this.inputUsername, username);
+        await this.setValue(this.inputPassword, password);
+        await this.clickElement(this.btnSubmit);
     }
 
     async isOnLoginPage() {
-        return await this.inputUsername.isDisplayed();
+        return this.isDisplayed(this.inputUsername);
+    }
+
+    async getErrorMessageText() {
+        return this.getText(this.errorMessage);
     }
 
     open() {

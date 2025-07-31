@@ -14,20 +14,28 @@ class FooterPage extends Page {
     }
 
     async clickX() {
-        await this.xLink.waitForClickable();
-        await this.xLink.click();
+        await this.clickElement(this.xLink);
     }
 
     async clickFacebook() {
-        await this.facebookLink.waitForClickable();
-        await this.facebookLink.click();
+        await this.clickElement(this.facebookLink);
     }
 
     async clickLinkedin() {
-        await this.linkedinLink.waitForClickable();
-        await this.linkedinLink.click();
+        await this.clickElement(this.linkedinLink);
+    }
+
+    async isTwitterVisible() {
+        return this.isDisplayed(this.xLink);
+    }
+
+    async isFacebookVisible() {
+        return this.isDisplayed(this.facebookLink);
+    }
+
+    async isLinkedinVisible() {
+        return this.isDisplayed(this.linkedinLink);
     }
 }
 
 export default new FooterPage();
-
