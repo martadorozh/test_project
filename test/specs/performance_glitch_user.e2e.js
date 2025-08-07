@@ -1,5 +1,6 @@
 import loginPage from '../pageobjects/login.page.js';
 import inventoryPage from '../pageobjects/inventory.page.js';
+import helper from '../helpers/helper.js';
 
 describe('TC_performance_glitch_user - Slow performance check', () => {
     before(async () => {
@@ -8,17 +9,8 @@ describe('TC_performance_glitch_user - Slow performance check', () => {
     });
 
     it('should login successfully and display inventory with delay', async () => {
-        await browser.waitUntil(
-            async () => (await browser.getUrl()).includes('inventory.html'),
-            {
-                timeout: 10000,
-                timeoutMsg: 'Inventory page did not load within expected time'
-            }
-        );
+        await helper.verifyUrlContains('inventory.html');
 
-        await inventoryPage.pause(2000);
-
-        const items = await inventoryPage.inventoryItems;
-        expect(items.length).toBeGreaterThan(0);
+        await inventoryPage.verifyInventoryItemsCountIsGreaterThan(0);
     });
 });

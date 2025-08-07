@@ -1,40 +1,45 @@
-import Page from './page.js';
-
-class FooterPage extends Page {
+class FooterPage {
     get xLink() {
         return $('[data-test="social-twitter"]');
     }
-
     get facebookLink() {
         return $('[data-test="social-facebook"]');
     }
-
     get linkedinLink() {
         return $('[data-test="social-linkedin"]');
     }
 
-    async clickX() {
-        await this.clickElement(this.xLink);
+    get socialLinks() {
+        return [
+            { element: this.xLink, expectedUrl: 'x.com' },
+            { element: this.facebookLink, expectedUrl: 'facebook.com' },
+            { element: this.linkedinLink, expectedUrl: 'linkedin.com' },
+        ];
     }
 
-    async clickFacebook() {
-        await this.clickElement(this.facebookLink);
+    async clickElement(element) {
+        await element.waitForExist({ timeout: 5000 });
+        await element.scrollIntoView();
+        await element.click();
     }
 
-    async clickLinkedin() {
-        await this.clickElement(this.linkedinLink);
-    }
+    async verifySocialLinks(helper) {
+        for (const { element, expectedUrl } of this.socialLinks) {
+            const originalWindow = await browser.getWindowHandle();
 
-    async isTwitterVisible() {
-        return this.isDisplayed(this.xLink);
-    }
+            await this.clickElement(element);
 
-    async isFacebookVisible() {
-        return this.isDisplayed(this.facebookLink);
-    }
+            const allWindows = await browser.getWindowHandles();
+            const newWindow = allWindows.find(win => win !== originalWindow);
 
-    async isLinkedinVisible() {
-        return this.isDisplayed(this.linkedinLink);
+            expect(newWindow).toBeDefined();
+
+            await browser.switchToWindow(newWindow);
+            await helper.verifyUrlContains(expectedUrl);
+
+            await browser.closeWindow();
+            await browser.switchToWindow(originalWindow);
+        }
     }
 }
 

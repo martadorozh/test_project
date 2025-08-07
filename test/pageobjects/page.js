@@ -49,4 +49,23 @@ export default class Page {
         await element.waitForDisplayed();
         return await element.getAttribute(attr);
     }
+
+    async getValue(element) {
+        await element.waitForDisplayed();
+        return await element.getValue();
+    }
+
+
+    async getElementsText(elements) {
+        const texts = [];
+        for (const el of elements) {
+            await el.waitForDisplayed();
+            texts.push(await el.getText());
+        }
+        return texts;
+    }
+
+    async getElementsCount(elements) {
+        return (await elements).length;
+    }
 }

@@ -6,6 +6,9 @@ class CheckoutPage extends Page {
     get postalCodeInput() { return $('#postal-code'); }
     get continueBtn() { return $('input[data-test="continue"]'); }
     get finishBtn() { return $('button[data-test="finish"]'); }
+    get itemName() { return $('[data-test="inventory-item-name"]'); }
+    get totalLabel() { return $('[data-test="total-label"]'); }
+    get taxLabel() { return $('[data-test="tax-label"]'); }
 
     async fillCheckoutForm(firstName, lastName, postalCode) {
         await this.setValue(this.firstNameInput, firstName);
@@ -19,6 +22,26 @@ class CheckoutPage extends Page {
 
     async clickFinish() {
         await this.clickElement(this.finishBtn);
+    }
+
+    async getItemNameText() {
+        return await this.getText(this.itemName);
+    }
+
+    async getTotalAmount() {
+        const totalText = await this.getText(this.totalLabel);
+        return parseFloat(totalText.replace('Total: $', ''));
+    }
+
+    async getTaxAmount() {
+        const taxText = await this.getText(this.taxLabel);
+        return parseFloat(taxText.replace('Tax: $', ''));
+    }
+
+    async verifyTotalWithTax(expectedSubtotal) {
+        const total = await this.getTotalAmount();
+        const tax = await this.getTaxAmount();
+        expect(total).toBeCloseTo(expectedSubtotal + tax, 2);
     }
 
     async open() {

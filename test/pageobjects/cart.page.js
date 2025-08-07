@@ -10,7 +10,17 @@ class CartPage extends Page {
     }
 
     async getCartItemsCount() {
-        return this.cartItems.length;
+        const items = await this.cartItems;
+        return items.length;
+    }
+
+    async verifyCartIsEmpty() {
+        const count = await this.getCartItemsCount();
+        expect(count).toBe(0);
+    }
+
+    async getItemNameByIndex(index) {
+        return this.cartItems[index].$('div.inventory_item_name');
     }
 
     async open() {

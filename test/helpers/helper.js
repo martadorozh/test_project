@@ -38,5 +38,17 @@ export default {
     async verifyXIconsCount(expectedCount = 2) {
         const xIcons = await $$('svg[data-icon="times-circle"]');
         expect(xIcons.length).toBe(expectedCount);
+    },
+
+    async verifyElementCountEquals(elements, expectedCount) {
+        const count = (await elements).length;
+        expect(count).toBe(expectedCount);
+    },
+
+    async verifyCartItemNameByIndex(cartPage, index, expectedName) {
+        const items = await cartPage.cartItems;
+        expect(items.length).toBeGreaterThan(index);
+        const itemNameEl = items[index].$('div.inventory_item_name');
+        await this.verifyTextEquals(itemNameEl, expectedName);
     }
 };

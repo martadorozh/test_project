@@ -12,14 +12,10 @@ describe('TC09 - Checkout without products', () => {
 
     it('should handle checkout attempt with empty cart', async () => {
         await inventoryPage.goToCart();
-        await cartPage.pause(2000);
+        await helper.verifyUrlContains('cart.html');
 
-        const itemCount = await cartPage.getCartItemsCount();
-        expect(itemCount).toBe(0);
-        await cartPage.pause(2000);
-
+        await cartPage.verifyCartIsEmpty()
         await cartPage.clickCheckout();
-        await cartPage.pause(2000);
 
         await helper.verifyUrlContains('checkout-step-one.html');
     });

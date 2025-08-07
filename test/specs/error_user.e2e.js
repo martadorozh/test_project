@@ -9,7 +9,6 @@ describe('TC - Error User Checkout Flow', () => {
     before(async () => {
         await loginPage.open();
         await loginPage.login('error_user', 'secret_sauce');
-        await checkoutPage.pause(1000);
     });
 
     it('should get stuck on checkout-step-one.html due to broken flow', async () => {
@@ -21,4 +20,3 @@ describe('TC - Error User Checkout Flow', () => {
         await helper.verifyUrlContains('checkout-step-one.html');
     });
 });
-
