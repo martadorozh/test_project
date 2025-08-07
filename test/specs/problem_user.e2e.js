@@ -6,7 +6,6 @@ describe('TC_problem_user - Inventory issues', () => {
     before(async () => {
         await loginPage.open();
         await loginPage.login('problem_user', 'secret_sauce');
-        await inventoryPage.open();
     });
 
     it('should login and show products with problem_user display issues', async () => {

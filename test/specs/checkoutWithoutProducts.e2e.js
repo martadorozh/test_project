@@ -7,7 +7,6 @@ describe('TC09 - Checkout without products', () => {
     beforeEach(async () => {
         await loginPage.open();
         await loginPage.login('standard_user', 'secret_sauce');
-        await inventoryPage.open();
     });
 
     it('should handle checkout attempt with empty cart', async () => {
